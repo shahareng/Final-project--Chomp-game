@@ -12,15 +12,14 @@ class Human(Player):
     def move(self, board, i, j):
         make_move = board.is_legal_move(i, j)
         if make_move:
-            print("human make move "+ str(i)+", "+str(j)) ###
+            ### print("human make move "+ str(i)+", "+str(j))
             board.update(i, j)
         return make_move
 
     def is_finished(self, board):
         is_fin = board.is_final_state()
-        if is_fin:
-            print("you won")
-        return is_fin
+        ### if is_fin: print("you won")
+        return is_fin, 0
 
 
 class AI(Player):
@@ -53,7 +52,7 @@ class AI(Player):
             for j in reversed(range(max_length)):
                 for i in range(3):
                     if board.is_legal_move(i, j) and board.try_move(i, j) in self.p_positions:
-                        print("ai make move "+ str(i)+", "+str(j)) ###
+                        ### print("ai make move "+ str(i)+", "+str(j))
                         board.update(i, j)
                         return
             raise Exception("p position not found")
@@ -65,6 +64,5 @@ class AI(Player):
 
     def is_finished(self, board):
         is_fin = board.is_final_state()
-        if is_fin:
-            print("you lose")
-        return is_fin
+        ### if is_fin: print("you lose")
+        return is_fin, 1

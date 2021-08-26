@@ -1,10 +1,15 @@
 import pygame
 from board import *
 from player import *
+from GUI import *
 
 BOARD_SIZE_LIMIT = 50
 CELL_SIZE = 40
 MARGIN = 5
+
+WIN = 0
+LOSE = 1
+CLICK_POISON = 2
 
 """ Define colors """
 RED = (204, 0, 0)
@@ -43,13 +48,13 @@ class Game:
 
             self.step(self.human_player)
 
-            if not self.game_over: ### close window
-                pygame.time.wait(500)
+            if not self.game_over:
+                pygame.time.wait(700)
                 self.step(self.ai_player)
 
-            clock.tick(60) ###
+            clock.tick(60)
 
-        pygame.time.wait(2000)
+        pygame.time.wait(1400)
         pygame.quit()
 	
     def step(self, player):
@@ -60,13 +65,15 @@ class Game:
                 for event in pygame.event.get():
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         pos = pygame.mouse.get_pos()
-                                     # Change the x/y screen coordinates to grid coordinates
+
+                        # Change the x/y screen coordinates to board coordinates
                         col = pos[0] // (CELL_SIZE + MARGIN)
                         row = pos[1] // (CELL_SIZE + MARGIN)
 
                         if self.board.is_poison(row, col):
                             self.game_over = True
-                            print("you lose, can't cleek on poisn")
+                            self.end = CLICK_POISON
+                            ### print("you lose, can't cleek on poisn")
                             return
                         if player.move(self.board, row, col):
                             user_clicked = True
@@ -74,8 +81,11 @@ class Game:
         else: #player is AI
             player.move(self.board)
             
-        self.draw_board()              
-        self.game_over = player.is_finished(self.board)
+        self.draw_board()
+        
+        result = player.is_finished(self.board)
+        self.game_over = result[0]
+        self.end = result[1]
 
     def draw_board(self):
         board_mat = self.board.get_board()
@@ -85,23 +95,32 @@ class Game:
                     color = BROWN
                 elif board_mat[row, col] == 0:
                     color = DARK_GRAY
-                else:
+                elif board_mat[row, col] == -1:
                     color = RED
+                else:
+                    color = BROWN
                 pygame.draw.circle(self.screen, color, [(MARGIN + CELL_SIZE) * col + MARGIN + CELL_SIZE / 2,
                                                         (MARGIN + CELL_SIZE) * row + MARGIN + CELL_SIZE / 2], CELL_SIZE / 2)
         pygame.display.flip()
 
+    def get_end(self):
+        return self.end
+
 
 if __name__ == "__main__":
     
-    size = int(input("Enter board size 3*n: "))
-    if (size > BOARD_SIZE_LIMIT):
-        raise Exception("")
-    
-    poison_location = int(input("Select poison location, options 1 to 4: "))
-    if (poison_location < 1) and (poison_location > 4):
-        raise Exception("")
-    
-    game = Game(size, poison_location)
+    start_window()
+
+    game = Game(get_size(), get_poison_location())
     game.play()
+
+    end = game.get_end()
+    if end == WIN:
+            win_window()
+    elif end == LOSE:
+        lose_window()
+    elif end == CLICK_POISON:
+        lose_window(True)
+        
+    
 

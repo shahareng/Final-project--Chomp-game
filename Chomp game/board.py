@@ -22,17 +22,17 @@ class Board:
             
         elif self.poison_location == 2:
             self.board[1][0] = -1
-            self.board[2][2] = -1 ### [2][0], [2][1] ?
-            self.board[2][0] = 0
-            self.board[2][1] = 0
+            self.board[2][2] = -1
+            self.board[2][0] = -2
+            self.board[2][1] = -2
 
             self.final_state = [3, 1, 0]
             
         elif self.poison_location == 3:
             self.board[0][0] = -1
-            self.board[2][1] = -1 ### [1][0], [2][0] ?
-            self.board[1][0] = 0
-            self.board[2][0] = 0
+            self.board[2][1] = -1
+            self.board[1][0] = -2
+            self.board[2][0] = -2
 
             self.final_state = [2, 1, 1]
             
@@ -46,7 +46,7 @@ class Board:
         return self.board[row][col] == 1
 
     def is_poison(self, row, col):
-        return self.board[row][col] == -1
+        return self.board[row][col] == -1 or self.board[row][col] == -2
 
     def update(self, row, col):
         for r in range(row+1):
